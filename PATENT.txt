@@ -1,0 +1,17 @@
+PATENT GRANT AND NOTICE – EchoRDS
+
+The author(s) of this project declare that they are the original creators of the EchoRDS system,
+a method for broadcasting and receiving JSON data via FM RDS using the SPB490 encoding protocol.
+
+The innovation is considered intellectual property, and commercial use (such as selling hardware or software
+based on this system) requires explicit permission from the authors.
+
+Non-commercial use, scientific research, educational use, and open-source development
+are freely permitted under the GNU AGPLv3 license, provided that all derived work
+maintains the same license and acknowledges the original authors.
+
+Any commercial exploitation of the invention without consent will be considered a violation
+of the author's rights and may lead to legal action.
+
+For licensing inquiries or collaboration proposals, contact:
+[tuo indirizzo email o sito]

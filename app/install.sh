@@ -1,0 +1,1 @@
+sudo apt install uuid-dev libssl-dev

@@ -1,0 +1,118 @@
+==========================
+MVP SPEC – EchoRDS / EchoDAB
+==========================
+
+Titolo: Sistema di trasmissione dati (JSON) via Radio – FM/RDS e DAB+
+Autore: Matias Alejandro Plumari
+Versione: 0.1
+Data: 4/6/2025
+
+---------------------------
+OBIETTIVO DEL PROGETTO
+---------------------------
+Realizzare un sistema di comunicazione unidirezionale in grado di trasmettere dati (messaggi strutturati JSON) da un server a uno o più ricevitori radio utilizzando:
+
+- FM + RDS (SPB490 encoding)
+- DAB+ (tramite MOT o Packet Mode)
+
+Lo scopo dell’MVP è inviare brevi messaggi criptati, riceverli via radio e salvarli in un database su Raspberry Pi.
+
+---------------------------
+COMPONENTI DEL SISTEMA
+---------------------------
+
+1. SERVER TX (trasmettitore dati)
+- Input: JSON da terminale, API o file
+- Output: dati codificati per trasmissione
+- Responsabilità:
+  - Codifica messaggio in SPB490 (RDS) o formato MOT/Packet (DAB)
+  - Cifratura con chiave pubblica (RSA) e firma digitale (opzionale)
+  - Invio a encoder RDS (via seriale/USB) o DAB encoder (UDP/IP)
+
+2. GATEWAY HARDWARE
+- FM/RDS: trasmettitore FM con modulo RDS compatibile UECP (v6.02)
+- DAB: encoder DAB+ + multiplexer + trasmettitore RF (es. ODR-DabMux + ODR-DabMod)
+
+3. RECEIVER (Raspberry Pi + radio receiver)
+- HW: Raspberry Pi 3/4 + RTL-SDR (per DAB) o radio FM con uscita RDS (UART/I2C)
+- SW:
+  - Lettura del dato RDS (via SPB490) o MOT/Packet (via ODR-DabReceiver / librerie custom)
+  - Decifratura con chiave privata (RSA)
+  - Parsing del JSON
+  - Salvataggio in DB (SQLite, PostgreSQL, ecc.)
+
+---------------------------
+PROTOCOLLO DEI MESSAGGI
+---------------------------
+
+Formato JSON trasmesso (esempio):
+{
+  "type": "alert",
+  "timestamp": "2025-06-04T12:00:00Z",
+  "data": {
+    "message": "ALERTA ZONA 5 - MOVIMENTO NEMICO"
+  }
+}
+
+Passaggi di codifica:
+1. JSON string → compressione opzionale (es. gzip)
+2. Cifratura con RSA public key
+3. Firma digitale (opzionale)
+4. Impacchettamento per SPB490 (FM) o MOT (DAB)
+
+---------------------------
+SICUREZZA
+---------------------------
+- Chiave pubblica distribuita offline al ricevitore
+- Cifratura end-to-end RSA 2048
+- Timestamp + nonce per evitare replay
+- Messaggi firmati digitalmente (opzionale)
+
+---------------------------
+REQUISITI PER L'MVP
+---------------------------
+
+✅ SERVER
+- Script (Python, Node.js o Go) che prende JSON e invia a encoder RDS/DAB
+- Supporto base alla cifratura RSA
+
+✅ RICEVENTE
+- Raspberry Pi script:
+  - Lettura dati da radio
+  - Decodifica/cifratura
+  - Salvataggio JSON in SQLite
+  - Log e timestamp
+
+✅ TRASMISSIONE
+- RDS: invio messaggio via SPB490 a trasmettitore FM
+- DAB: configurazione encoder DAB+ per inviare MOT (JSON file)
+
+✅ CHIAVI
+- Script per generazione RSA keys
+- Deposito chiave pubblica sul ricevitore
+- Decodifica lato client
+
+---------------------------
+PRIORITÀ MVP
+---------------------------
+1. JSON → criptato → inviato via RDS/DAB → ricevuto → decriptato → salvato
+2. Logging, validazione firma e timestamp
+3. UI web minimale per inviare messaggi (facoltativa)
+
+---------------------------
+TECNOLOGIE CONSIGLIATE
+---------------------------
+- Linguaggio: Python / Node.js / Go
+- Libs:
+  - `pycryptodome`, `cryptography`, `json`, `gzip`
+  - `rtl-sdr`, `odr-dabmux`, `odr-dabmod` (per DAB)
+  - `rdstext` o lib analoghe per RDS
+
+---------------------------
+CONTATTO / LICENZA
+---------------------------
+- Licenza: AGPLv3
+- Patent notice: solo uso non commerciale ammesso
+- Contatto: [TUO EMAIL / GITHUB]
+
+FINE DOCUMENTO
